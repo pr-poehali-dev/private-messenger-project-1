@@ -6,6 +6,190 @@ import Icon from '@/components/ui/icon';
 type IconName = string;
 type Section = 'chats' | 'contacts' | 'profile' | 'notifications' | 'security' | 'archive';
 
+// ─── LoginPage ────────────────────────────────────────────────────────────────
+
+function LoginPage({ onLogin }: { onLogin: (name: string) => void }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPass, setShowPass] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    if (!email.trim() || !password.trim()) {
+      setError('Заполните все поля');
+      return;
+    }
+    if (password.length < 4) {
+      setError('Неверный логин или пароль');
+      return;
+    }
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      const name = email.split('@')[0].replace('.', ' ').replace(/\b\w/g, c => c.toUpperCase());
+      onLogin(name || 'Михаил Орлов');
+    }, 1200);
+  };
+
+  return (
+    <div className="h-screen flex overflow-hidden bg-[hsl(220,20%,8%)]" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+
+      {/* Left decorative panel */}
+      <div className="hidden lg:flex w-[42%] flex-col justify-between p-12 bg-[hsl(220,22%,11%)] border-r border-[hsl(220,18%,18%)] relative overflow-hidden">
+        {/* Grid pattern */}
+        <div className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: 'linear-gradient(hsl(210,90%,60%) 1px, transparent 1px), linear-gradient(90deg, hsl(210,90%,60%) 1px, transparent 1px)',
+            backgroundSize: '40px 40px',
+          }}
+        />
+        {/* Glow */}
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-[hsl(210,90%,50%)] opacity-[0.06] blur-3xl pointer-events-none" />
+
+        <div className="relative z-10">
+          <div className="flex items-center gap-3 mb-12">
+            <div className="w-10 h-10 rounded-xl bg-[hsl(210,90%,42%)] flex items-center justify-center">
+              <Icon name="Lock" size={20} className="text-white" />
+            </div>
+            <div>
+              <div className="text-[15px] font-semibold text-[hsl(220,15%,92%)] tracking-tight">SecureChat</div>
+              <div className="text-[11px] text-[hsl(220,12%,45%)] tracking-widest uppercase">Enterprise</div>
+            </div>
+          </div>
+
+          <h1 className="text-3xl font-semibold text-[hsl(220,15%,90%)] leading-tight mb-4">
+            Защищённые<br />коммуникации<br />для бизнеса
+          </h1>
+          <p className="text-sm text-[hsl(220,12%,48%)] leading-relaxed max-w-xs">
+            Корпоративный мессенджер со сквозным шифрованием, управлением доступом и журналом безопасности.
+          </p>
+        </div>
+
+        <div className="relative z-10 space-y-3">
+          {[
+            { icon: 'Shield', text: 'Сквозное шифрование AES-256' },
+            { icon: 'Users', text: 'Групповые и личные чаты' },
+            { icon: 'Lock', text: 'Двухфакторная аутентификация' },
+            { icon: 'Activity', text: 'Журнал сеансов и аудит' },
+          ].map((f, i) => (
+            <div
+              key={f.text}
+              className="flex items-center gap-3 animate-fade-in"
+              style={{ animationDelay: `${i * 80}ms` }}
+            >
+              <div className="w-8 h-8 rounded-lg bg-[hsl(215,55%,20%)] flex items-center justify-center flex-shrink-0">
+                <Icon name={f.icon as IconName} size={14} className="text-[hsl(210,90%,62%)]" />
+              </div>
+              <span className="text-[13px] text-[hsl(220,12%,55%)]">{f.text}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Right form panel */}
+      <div className="flex-1 flex items-center justify-center px-8">
+        <div className="w-full max-w-sm animate-fade-in">
+          {/* Mobile logo */}
+          <div className="flex items-center gap-3 mb-10 lg:hidden">
+            <div className="w-9 h-9 rounded-xl bg-[hsl(210,90%,42%)] flex items-center justify-center">
+              <Icon name="Lock" size={18} className="text-white" />
+            </div>
+            <span className="text-[15px] font-semibold text-[hsl(220,15%,92%)]">SecureChat</span>
+          </div>
+
+          <div className="mb-8">
+            <h2 className="text-2xl font-semibold text-[hsl(220,15%,92%)] mb-1">Добро пожаловать</h2>
+            <p className="text-sm text-[hsl(220,12%,48%)]">Войдите в корпоративный аккаунт</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-[11px] font-medium text-[hsl(220,12%,50%)] uppercase tracking-wider mb-1.5">
+                Корпоративный email
+              </label>
+              <div className="relative">
+                <Icon name="Mail" size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[hsl(220,12%,38%)]" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={e => { setEmail(e.target.value); setError(''); }}
+                  placeholder="m.ivanov@company.ru"
+                  autoComplete="email"
+                  className="w-full bg-[hsl(220,22%,13%)] border border-[hsl(220,18%,22%)] text-[hsl(220,15%,88%)] placeholder-[hsl(220,12%,35%)] text-sm rounded-lg pl-10 pr-4 py-3 outline-none focus:border-[hsl(210,90%,45%)] transition-colors"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-medium text-[hsl(220,12%,50%)] uppercase tracking-wider mb-1.5">
+                Пароль
+              </label>
+              <div className="relative">
+                <Icon name="KeyRound" size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[hsl(220,12%,38%)]" />
+                <input
+                  type={showPass ? 'text' : 'password'}
+                  value={password}
+                  onChange={e => { setPassword(e.target.value); setError(''); }}
+                  placeholder="••••••••"
+                  autoComplete="current-password"
+                  className="w-full bg-[hsl(220,22%,13%)] border border-[hsl(220,18%,22%)] text-[hsl(220,15%,88%)] placeholder-[hsl(220,12%,35%)] text-sm rounded-lg pl-10 pr-11 py-3 outline-none focus:border-[hsl(210,90%,45%)] transition-colors"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPass(v => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[hsl(220,12%,38%)] hover:text-[hsl(220,15%,60%)] transition-colors"
+                >
+                  <Icon name={showPass ? 'EyeOff' : 'Eye'} size={16} />
+                </button>
+              </div>
+            </div>
+
+            {error && (
+              <div className="flex items-center gap-2 px-3 py-2.5 bg-[hsl(0,50%,14%)] border border-[hsl(0,55%,24%)] rounded-lg animate-fade-in">
+                <Icon name="AlertCircle" size={14} className="text-[hsl(0,65%,58%)] flex-shrink-0" />
+                <span className="text-[13px] text-[hsl(0,60%,65%)]">{error}</span>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-2 py-3 bg-[hsl(210,90%,42%)] hover:bg-[hsl(210,90%,48%)] disabled:opacity-60 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-lg transition-all duration-200 mt-2"
+            >
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Проверка...
+                </>
+              ) : (
+                <>
+                  <Icon name="LogIn" size={16} />
+                  Войти
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="mt-6 pt-6 border-t border-[hsl(220,18%,18%)] flex items-center gap-2">
+            <Icon name="Shield" size={13} className="text-[hsl(210,90%,50%)]" />
+            <span className="text-[11px] text-[hsl(220,12%,40%)]">Защищено сквозным шифрованием · TLS 1.3</span>
+          </div>
+
+          <p className="mt-4 text-center text-[12px] text-[hsl(220,12%,38%)]">
+            Забыли пароль?{' '}
+            <button className="text-[hsl(210,90%,58%)] hover:text-[hsl(210,90%,70%)] transition-colors">
+              Обратитесь в IT-поддержку
+            </button>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface Message {
   id: number;
   text: string;
@@ -635,9 +819,9 @@ function ArchiveSection() {
   );
 }
 
-// ─── Main ─────────────────────────────────────────────────────────────────────
+// ─── Messenger ────────────────────────────────────────────────────────────────
 
-const Index = () => {
+function Messenger({ userName, onLogout }: { userName: string; onLogout: () => void }) {
   const [section, setSection] = useState<Section>('chats');
   const [selectedChat, setSelectedChat] = useState<number | null>(1);
 
@@ -675,12 +859,20 @@ const Index = () => {
             />
           ))}
         </div>
-        <div className="mt-auto px-2 w-full">
+        <div className="mt-auto px-2 w-full flex flex-col gap-1">
           <button
             onClick={() => setSection('profile')}
             className="w-full flex items-center justify-center py-2 rounded-lg hover:bg-[hsl(220,22%,16%)] transition-colors"
+            title={userName}
           >
-            <Avatar name="Михаил Орлов" size="sm" online={true} />
+            <Avatar name={userName} size="sm" online={true} />
+          </button>
+          <button
+            onClick={onLogout}
+            title="Выйти"
+            className="w-full flex items-center justify-center py-2 rounded-lg text-[hsl(220,12%,38%)] hover:text-[hsl(0,60%,60%)] hover:bg-[hsl(0,30%,12%)] transition-colors"
+          >
+            <Icon name="LogOut" size={16} />
           </button>
         </div>
       </aside>
@@ -712,6 +904,18 @@ const Index = () => {
       </div>
     </div>
   );
+}
+
+// ─── Main ─────────────────────────────────────────────────────────────────────
+
+const Index = () => {
+  const [user, setUser] = useState<string | null>(null);
+
+  if (!user) {
+    return <LoginPage onLogin={setUser} />;
+  }
+
+  return <Messenger userName={user} onLogout={() => setUser(null)} />;
 };
 
 export default Index;
